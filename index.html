@@ -1,0 +1,294 @@
+<!-- Qutor App Login + Resources Page with 3-second Loading Screen, Smooth Transition, and AdSense Integration -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Qutor - Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;700&display=swap" rel="stylesheet">
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+     crossorigin="anonymous"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Raleway', sans-serif;
+      background: linear-gradient(to bottom, #e3f2fd, #ffffff);
+      overflow: hidden;
+    }
+    #loader {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: bold;
+      color: #1565c0;
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity 1s ease;
+    }
+    #loader.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    header {
+      background: linear-gradient(to right, #42a5f5, #1976d2);
+      padding: 2rem;
+      text-align: center;
+      color: white;
+    }
+    .container {
+      max-width: 400px;
+      margin: 40px auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+    .container.show {
+      opacity: 1;
+    }
+    .container h2 {
+      text-align: center;
+      color: #1565c0;
+    }
+    input {
+      width: 100%;
+      padding: 1rem;
+      margin: 0.8rem 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    button {
+      width: 100%;
+      padding: 1rem;
+      background: #1565c0;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .toggle {
+      margin-top: 1rem;
+      text-align: center;
+      color: #1565c0;
+      cursor: pointer;
+    }
+    .resources {
+      display: none;
+      max-width: 1100px;
+      margin: auto;
+      padding: 2rem;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+    .resources.show {
+      display: block;
+      opacity: 1;
+    }
+    .resources h2 {
+      text-align: center;
+      color: #1565c0;
+    }
+    .logout-button {
+      display: block;
+      margin: 1rem auto;
+      background: #ef5350;
+      padding: 1rem;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .resource-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 2rem;
+    }
+    .resource-item {
+      background: #e3f2fd;
+      padding: 2rem;
+      border-radius: 12px;
+      text-align: center;
+      cursor: pointer;
+    }
+    .resource-item img {
+      width: 60px;
+      margin-bottom: 1rem;
+    }
+    footer {
+      text-align: center;
+      padding: 2rem;
+      background: #f0f0f0;
+      margin-top: 2rem;
+    }
+  </style>
+  <script type="module">
+    window.addEventListener("DOMContentLoaded", () => {
+      setTimeout(() => {
+        document.getElementById("loader").classList.add("hidden");
+        document.getElementById("login-box").classList.add("show");
+        document.body.style.overflow = "auto";
+      }, 3000);
+    });
+
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDzlSX4MfPULeZC_iAvb6LfklbB87FFaCI",
+      authDomain: "eduapp-76ca6.firebaseapp.com",
+      projectId: "eduapp-76ca6",
+      storageBucket: "eduapp-76ca6.appspot.com",
+      messagingSenderId: "eduapp-76ca6-default-rtdb",
+      appId: "1:989341967241:web:d772473039438d2df83758"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+
+    const loginBox = document.getElementById("login-box");
+    const resourceSection = document.getElementById("resources");
+    const toggleLink = document.getElementById("toggle-link");
+    const formTitle = document.getElementById("form-title");
+    const formBtn = document.getElementById("form-btn");
+    const emailInput = document.getElementById("email");
+    const passInput = document.getElementById("password");
+    const form = document.getElementById("auth-form");
+    const logoutBtn = document.getElementById("logout-btn");
+
+    let isLogin = true;
+
+    toggleLink.addEventListener("click", () => {
+      isLogin = !isLogin;
+      formTitle.textContent = isLogin ? "Login to Qutor" : "Create an Account";
+      formBtn.textContent = isLogin ? "Login" : "Sign Up";
+      toggleLink.textContent = isLogin ? "New here? Create an account" : "Already have an account? Login";
+    });
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const email = emailInput.value;
+      const password = passInput.value;
+      if (isLogin) {
+        signInWithEmailAndPassword(auth, email, password)
+          .then(() => showResources())
+          .catch(err => alert("Login failed: " + err.message));
+      } else {
+        createUserWithEmailAndPassword(auth, email, password)
+          .then(() => showResources())
+          .catch(err => alert("Signup failed: " + err.message));
+      }
+    });
+
+    logoutBtn.addEventListener("click", () => {
+      signOut(auth).then(() => location.reload());
+    });
+
+    function showResources() {
+      loginBox.style.display = "none";
+      resourceSection.classList.add("show");
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) showResources();
+    });
+
+    // Click handlers for resources
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".resource-item").forEach((item, index) => {
+        item.addEventListener("click", () => {
+          if (index === 0) {
+            window.open("https://example.com/math-notes", "_blank");
+          } else if (index === 3) {
+            window.open("https://example.com/educational-videos", "_blank");
+          } else {
+            alert("Coming soon!");
+          }
+        });
+      });
+    });
+  </script>
+</head>
+<body>
+  <div id="loader">Loading Qutor...</div>
+
+  <header>
+    <h1>Qutor</h1>
+    <p>Your Gateway to Smarter Learning</p>
+  </header>
+
+  <div id="login-box" class="container">
+    <h2 id="form-title">Login to Qutor</h2>
+    <form id="auth-form">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit" id="form-btn">Login</button>
+    </form>
+    <div id="toggle-link" class="toggle">New here? Create an account</div>
+  </div>
+
+  <div id="resources" class="resources">
+    <h2>Educational Resources</h2>
+    <button id="logout-btn" class="logout-button">Logout</button>
+
+    <!-- AdSense Sidebar Ad Placeholder -->
+    <div style="margin: 2rem auto; text-align:center;">
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-3940256099942544"
+           data-ad-slot="6300978111"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+
+    <div class="resource-grid">
+      <div class="resource-item">
+        <img src="https://img.icons8.com/ios-filled/100/book.png" alt="PDF">
+        <div>Math Notes (PDF)</div>
+      </div>
+      <div class="resource-item">
+        <img src="https://img.icons8.com/ios-filled/100/test-tube.png" alt="Science">
+        <div>Science Diagrams (PNG)</div>
+      </div>
+      <div class="resource-item">
+        <img src="https://img.icons8.com/ios-filled/100/document.png" alt="Docs">
+        <div>Question Papers (DOCX)</div>
+      </div>
+      <div class="resource-item">
+        <img src="https://img.icons8.com/ios-filled/100/video.png" alt="Videos">
+        <div>Educational Videos (MP4)</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 Qutor</p>
+    <!-- AdSense Footer Ad Placeholder -->
+    <div style="margin-top: 1rem;">
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-3940256099942544"
+           data-ad-slot="6300978111"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+  </footer>
+</body>
+</html>
