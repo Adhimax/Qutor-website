@@ -1,4 +1,4 @@
-<!-- Qutor App Login + Resources Page with 3-second Loading Screen, Smooth Transition, and AdSense Integration -->
+<!-- Qutor App Login + Resources Page with Forgot Password, Smooth Transition, and AdSense Integration -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,8 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Qutor - Login</title>
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@500;700&display=swap" rel="stylesheet">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
-     crossorigin="anonymous"></script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5910054966599840" crossorigin="anonymous"></script>
   <style>
     body {
       margin: 0;
@@ -75,7 +74,7 @@
       font-weight: bold;
       cursor: pointer;
     }
-    .toggle {
+    .toggle, .forgot {
       margin-top: 1rem;
       text-align: center;
       color: #1565c0;
@@ -146,6 +145,7 @@
       createUserWithEmailAndPassword,
       signInWithEmailAndPassword,
       onAuthStateChanged,
+      sendPasswordResetEmail,
       signOut
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
@@ -164,6 +164,7 @@
     const loginBox = document.getElementById("login-box");
     const resourceSection = document.getElementById("resources");
     const toggleLink = document.getElementById("toggle-link");
+    const forgotLink = document.getElementById("forgot-link");
     const formTitle = document.getElementById("form-title");
     const formBtn = document.getElementById("form-btn");
     const emailInput = document.getElementById("email");
@@ -178,6 +179,15 @@
       formTitle.textContent = isLogin ? "Login to Qutor" : "Create an Account";
       formBtn.textContent = isLogin ? "Login" : "Sign Up";
       toggleLink.textContent = isLogin ? "New here? Create an account" : "Already have an account? Login";
+    });
+
+    forgotLink.addEventListener("click", () => {
+      const email = prompt("Enter your email to reset password:");
+      if (email) {
+        sendPasswordResetEmail(auth, email)
+          .then(() => alert("Password reset link sent! Check your inbox."))
+          .catch(err => alert("Error: " + err.message));
+      }
     });
 
     form.addEventListener("submit", (e) => {
@@ -208,7 +218,6 @@
       if (user) showResources();
     });
 
-    // Click handlers for resources
     document.addEventListener("DOMContentLoaded", () => {
       document.querySelectorAll(".resource-item").forEach((item, index) => {
         item.addEventListener("click", () => {
@@ -240,53 +249,28 @@
       <button type="submit" id="form-btn">Login</button>
     </form>
     <div id="toggle-link" class="toggle">New here? Create an account</div>
+    <div id="forgot-link" class="forgot">Forgot Password?</div>
   </div>
 
   <div id="resources" class="resources">
     <h2>Educational Resources</h2>
     <button id="logout-btn" class="logout-button">Logout</button>
-
-    <!-- AdSense Sidebar Ad Placeholder -->
     <div style="margin: 2rem auto; text-align:center;">
-      <ins class="adsbygoogle"
-           style="display:block"
-           data-ad-client="ca-pub-5910054966599840"
-           data-ad-slot="9603378408"
-           data-ad-format="auto"
-           data-full-width-responsive="true"></ins>
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5910054966599840" data-ad-slot="9603378408" data-ad-format="auto" data-full-width-responsive="true"></ins>
       <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </div>
-
     <div class="resource-grid">
-      <div class="resource-item">
-        <img src="https://img.icons8.com/ios-filled/100/book.png" alt="PDF">
-        <div>Math Notes (PDF)</div>
-      </div>
-      <div class="resource-item">
-        <img src="https://img.icons8.com/ios-filled/100/test-tube.png" alt="Science">
-        <div>Science Diagrams (PNG)</div>
-      </div>
-      <div class="resource-item">
-        <img src="https://img.icons8.com/ios-filled/100/document.png" alt="Docs">
-        <div>Question Papers (DOCX)</div>
-      </div>
-      <div class="resource-item">
-        <img src="https://img.icons8.com/ios-filled/100/video.png" alt="Videos">
-        <div>Educational Videos (MP4)</div>
-      </div>
+      <div class="resource-item"><img src="https://img.icons8.com/ios-filled/100/book.png" alt="PDF"><div>Math Notes (PDF)</div></div>
+      <div class="resource-item"><img src="https://img.icons8.com/ios-filled/100/test-tube.png" alt="Science"><div>Science Diagrams (PNG)</div></div>
+      <div class="resource-item"><img src="https://img.icons8.com/ios-filled/100/document.png" alt="Docs"><div>Question Papers (DOCX)</div></div>
+      <div class="resource-item"><img src="https://img.icons8.com/ios-filled/100/video.png" alt="Videos"><div>Educational Videos (MP4)</div></div>
     </div>
   </div>
 
   <footer>
     <p>© 2025 Qutor</p>
-    <!-- AdSense Footer Ad Placeholder -->
     <div style="margin-top: 1rem;">
-      <ins class="adsbygoogle"
-           style="display:block"
-           data-ad-client="ca-pub-5910054966599840"
-           data-ad-slot="9603378408"
-           data-ad-format="auto"
-           data-full-width-responsive="true"></ins>
+      <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-5910054966599840" data-ad-slot="9603378408" data-ad-format="auto" data-full-width-responsive="true"></ins>
       <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </div>
   </footer>
